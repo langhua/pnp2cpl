@@ -21,13 +21,15 @@ def convert_pnp_to_cpl():
         outfile.write("Designator, Comment, Layer, Footprint, Center-X, Center-Y, Rotation, Description\n")
         for line in infile:
             # Skip lines that start with Via or Pad or B1-B6 or comments
+            # if not line.strip().startswith('Via') and not line.strip().startswith('Pad') \
+            #    and not line.strip().startswith('B1') and not line.strip().startswith('B2') \
+            #    and not line.strip().startswith('B3') and not line.strip().startswith('B4') \
+            #    and not line.strip().startswith('B5') and not line.strip().startswith('B6') \
             if not line.strip().startswith('Via') and not line.strip().startswith('Pad') \
-               and not line.strip().startswith('B1') and not line.strip().startswith('B2') \
-               and not line.strip().startswith('B3') and not line.strip().startswith('B4') \
-               and not line.strip().startswith('B5') and not line.strip().startswith('B6') \
+               and not re.match(r'^P[0-9]', line.strip()) \
                and not line.strip().startswith('#') and not line.strip().startswith('Description:'):
                 clean_line = line.replace('"', '')
-                for s in ['[SMD, multilayer]', '[SMD]', 'SandFlower', 'sandflower']:
+                for s in ['[SMD, multilayer]', '[SMD]', 'SandFlower', 'sandflower', '[SMD, electrolytic]']:
                     clean_line = clean_line.replace(s, '')
                 parts = clean_line.strip().split(',')
                 if len(parts) >= 6:
