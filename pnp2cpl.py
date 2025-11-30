@@ -1,17 +1,8 @@
 import os
 import re
 
-def convert_pnp_to_cpl():
-    # Find the first .xy file in the current directory
-    for filename in os.listdir('.'):
-        if filename.endswith('_pnp.xy'):
-            pnp_file = filename
-            break
-    else:
-        print("No _pnp.xy file found in the current directory.")
-        return
-
-    cpl_file = filename.replace('_pnp.xy', '_cpl.csv')
+def convert_pnp_to_cpl(pnp_file):
+    cpl_file = pnp_file.replace('_pnp.xy', '_cpl.csv')
     print(f"Converting '{pnp_file}' to '{cpl_file}'...")
 
     with open(pnp_file, 'r', encoding='UTF-8') as infile, open(cpl_file, 'w', encoding='UTF-8') as outfile:
@@ -20,11 +11,7 @@ def convert_pnp_to_cpl():
         outfile.write("\n")
         outfile.write("Designator, Comment, Layer, Footprint, Center-X, Center-Y, Rotation, Description\n")
         for line in infile:
-            # Skip lines that start with Via or Pad or B1-B6 or comments
-            # if not line.strip().startswith('Via') and not line.strip().startswith('Pad') \
-            #    and not line.strip().startswith('B1') and not line.strip().startswith('B2') \
-            #    and not line.strip().startswith('B3') and not line.strip().startswith('B4') \
-            #    and not line.strip().startswith('B5') and not line.strip().startswith('B6') \
+            # Skip lines that start with Via or Pad or comments
             if not line.strip().startswith('Via') and not line.strip().startswith('Pad') \
                and not re.match(r'^P[0-9]', line.strip()) \
                and not line.strip().startswith('#') and not line.strip().startswith('Description:'):
@@ -54,4 +41,11 @@ def convert_pnp_to_cpl():
 
 if __name__ == "__main__":
     print("Converting PNP to CPL...")
-    convert_pnp_to_cpl()
+    # Convert all _pnp.xy files in the current directory
+    found = False
+    for filename in os.listdir('.'):
+        if filename.endswith('_pnp.xy'):
+            convert_pnp_to_cpl(filename)
+            found = True
+    if not found:
+        print("No _pnp.xy file found in the current directory.")
